@@ -116,6 +116,15 @@ Every functional test must trace to a documented use case. Reference the plan an
 - Use shared builder functions for repeated object-graph setup.
 - Builders use SDK operations so they are themselves testing the create path.
 - Use unique identifiers (timestamps, UUIDs) to avoid collisions.
+- Functional cleanup helpers must delete child records before parent records; for multi-entity flows, remove dependent entities before the owning entities.
+- Functional builders and setup helpers must fail descriptively. When an SDK setup call fails, include the response status and error payload in the thrown error so review and debugging do not stop at a vague "register failed" message.
+
+### Assertion Rules
+
+- Assertions must be strong and intentional. Do not accept broad fallback status ranges like `200 | 400 | 500`.
+- When endpoint contracts change, functional tests must change with them.
+- When a slice introduces or standardizes intentional error conditions, functional API coverage must include explicit negative-path cases for those errors and assert the expected application error codes, not just the HTTP status.
+- Do not stop at a single generic failure case when the route exposes multiple meaningful denial reasons; cover the distinct error conditions that the frontend or other clients need to handle differently.
 
 ### Contract Subsumption
 

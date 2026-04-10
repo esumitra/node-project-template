@@ -163,10 +163,14 @@ Rules:
 - Every 4xx and 5xx response must return this envelope.
 - Validation errors (400) should include `details` with per-field errors when available.
 - Not-found errors (404) should use domain-specific codes (e.g., `CONTEST_NOT_FOUND`).
-- Permission errors (403) should use codes that distinguish the denial reason.
+- Permission errors (403) should use codes that distinguish the denial reason (e.g., `INSUFFICIENT_PERMISSION`, `NOT_MEMBER`).
+- Intentional application errors must use stable, descriptive, domain-specific codes rather than transport-only placeholders such as `BAD_REQUEST`, `FORBIDDEN`, or `NOT_FOUND` when the domain reason is known.
+- Error codes must be specific enough for clients and tests to distinguish materially different failures that share the same HTTP status.
+- Human-readable messages must explain the real failure clearly without exposing unsafe internals.
+- When useful, `details` should carry structured machine-readable context rather than ad hoc string blobs.
 - Define a shared Zod schema for the error envelope in the shared `dto/` package.
-- Fastify's global error handler should format all errors into this envelope.
-- Route schemas should declare error response shapes for 400, 401, 403, 404 where applicable.
+- Fastify's global error handler should format unhandled errors into this envelope where practical, and new route work should not bypass that standard.
+- Route schemas must declare error response shapes for the most relevant statuses such as 400, 401, 403, and 404.
 
 ---
 
