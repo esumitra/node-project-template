@@ -246,23 +246,93 @@ jobs:
       - name: "Build <projectName>"
         run: "npm run build:<projectName>"
 
-  # Uncomment and customize when deployment is ready:
+  # =========================================================================
+  # Deploy stages — uncomment and customize when deployment is ready
+  # =========================================================================
   #
   # deploy:
   #   needs: [service-coverage-report, projectName-unit-tests, service-build, projectName-build]
-  #   if: github.ref == 'refs/heads/main'
+  #   if: github.event_name == 'push' && github.ref == 'refs/heads/main'
   #   runs-on: ubuntu-latest
   #   steps:
-  #     - # Deploy steps here
+  #     - # Build and push Docker image to ECR
+  #     - # Register new ECS task definition
+  #     - # Run database migration via ECS run-task
+  #     - # Run seed via ECS run-task (pass bootstrap credentials via env overrides)
+  #     - # Update ECS service
+  #     - # Build webapp with release metadata:
+  #     #   <PROJECTNAME>_ENVIRONMENT, <PROJECTNAME>_BUILD_TIME_UTC,
+  #     #   <PROJECTNAME>_GIT_REF, <PROJECTNAME>_WEBAPP_GIT_SHA
+  #     - # Deploy webapp to S3 + invalidate CloudFront
+  #     - # Verify version-info.json exists in build output
   #
   # smoke-test:
   #   needs: deploy
   #   runs-on: ubuntu-latest
   #   steps:
   #     - run: npm run test:smoke:api
+
+  # =========================================================================
+  # Browser E2E — post-deploy Playwright tests against the deployed webapp
+  # =========================================================================
   #
-  # e2e-test:
-  #   needs: smoke-test
+  # Runs after deploy completes. Gracefully skips if login secrets
+  # are not configured yet. Start with a minimal deploy-gate journey
+  # (login → authenticated landing) before expanding to deeper flows.
+  #
+  # projectName-browser-e2e:
+  #   name: projectName-browser-e2e
   #   runs-on: ubuntu-latest
+  #   needs: deploy
+  #   if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+  #   env:
+  #     E2E_BASE_URL: https://qa.<your-domain>.com
+  #     E2E_EMAIL: ${{ secrets.QA_E2E_EMAIL }}
+  #     E2E_PASSWORD: ${{ secrets.QA_E2E_PASSWORD }}
   #   steps:
-  #     - run: npm run test:smoke:e2e
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/setup-node@v4
+  #       with:
+  #         node-version: 22
+  #         cache: npm
+  #     - run: npm ci
+  #
+  #     - name: Detect browser E2E readiness
+  #       id: browser-e2e-ready
+  #       run: |
+  #         if [ -z "$E2E_EMAIL" ] || [ -z "$E2E_PASSWORD" ]; then
+  #           echo "ready=false" >> $GITHUB_OUTPUT
+  #           echo "Browser E2E secrets not configured — skipping."
+  #         else
+  #           echo "ready=true" >> $GITHUB_OUTPUT
+  #         fi
+  #
+  #     - name: Install Playwright Chromium
+  #       if: steps.browser-e2e-ready.outputs.ready == 'true'
+  #       run: cd clients/<projectName> && npx playwright install --with-deps chromium
+  #
+  #     - name: Run browser E2E
+  #       if: steps.browser-e2e-ready.outputs.ready == 'true'
+  #       run: cd clients/<projectName> && npx playwright test
+  #
+  #     - name: Upload browser E2E artifacts
+  #       if: always() && steps.browser-e2e-ready.outputs.ready == 'true'
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: projectName-browser-e2e
+  #         path: |
+  #           clients/<projectName>/playwright-report/**
+  #           clients/<projectName>/test-results/**
+  #         if-no-files-found: warn
+  #
+  #     - name: Browser E2E summary
+  #       if: always()
+  #       run: |
+  #         echo "### Browser E2E" >> $GITHUB_STEP_SUMMARY
+  #         echo "" >> $GITHUB_STEP_SUMMARY
+  #         echo "- Base URL: \`$E2E_BASE_URL\`" >> $GITHUB_STEP_SUMMARY
+  #         if [ "${{ steps.browser-e2e-ready.outputs.ready }}" != "true" ]; then
+  #           echo "- Status: skipped (secrets not configured)" >> $GITHUB_STEP_SUMMARY
+  #         else
+  #           echo "- Status: executed" >> $GITHUB_STEP_SUMMARY
+  #         fi

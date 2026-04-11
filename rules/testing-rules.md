@@ -141,6 +141,7 @@ Every functional test must trace to a documented use case. Reference the plan an
 
 - Assertions must be strong and intentional. Do not accept broad fallback status ranges like `200 | 400 | 500`.
 - When endpoint contracts change, functional tests must change with them.
+- Do not weaken a test to match known-wrong production behavior when the contract or domain rule says the implementation is wrong. Fix the service behavior first, then update the test to assert the corrected behavior.
 - When a slice introduces or standardizes intentional error conditions, functional API coverage must include explicit negative-path cases for those errors and assert the expected application error codes, not just the HTTP status.
 - Do not stop at a single generic failure case when the route exposes multiple meaningful denial reasons; cover the distinct error conditions that the frontend or other clients need to handle differently.
 
@@ -334,8 +335,11 @@ Every smoke and E2E test must trace to a documented use case. Reference the plan
 ### Browser E2E Tests (Playwright)
 
 - Lives under `clients/<projectName>/e2e/`.
-- Uses Playwright against a running app.
-- In CI, browser E2E runs only after smoke tests succeed.
+- Uses Playwright against a running app or deployed environment.
+- In CI, browser E2E runs after deploy completes (post-deploy gate).
+- Start with a minimal deploy-gate journey (login page → sign in → authenticated landing selector) before expanding to deeper product flows.
+- Until E2E login secrets are configured in CI, the browser lane should skip explicitly with a clear summary instead of failing deploy jobs.
+- Do not expand the deploy-gate lane into deeper product coverage until those product surfaces are intentionally designed and stabilized.
 
 **Use-case driven:**
 - E2E tests prove complete user journeys, not page loads.
@@ -406,6 +410,13 @@ Do not keep bad tests just because they already exist.
 - Navigation to critical product pages
 - Mutations that change server state
 - Critical authenticated flows
+
+### E2E (Playwright)
+
+- Minimal deploy-gate authentication proof for the initial app
+- High-value end-to-end user journeys aligned with the active product scope once the app grows beyond the initial baseline
+- Error boundary absence on all tested pages
+- Console error absence on all tested pages
 
 ---
 
