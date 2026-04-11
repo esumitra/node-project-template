@@ -67,25 +67,66 @@ The `@/lib/api` module configures the SDK client (base URL, auth interceptor) an
 - Invalidate intentionally after mutations.
 - Handle loading, error, empty, and success states.
 
+### Query Defaults Must Be Intentional
+
+- Choose `staleTime`, retry behavior, and refetch triggers intentionally for the domain instead of relying blindly on defaults.
+- Be deliberate about `refetchOnWindowFocus`, `refetchOnReconnect`, and similar behaviors on screens where surprise refetching would create noisy or confusing UX.
+- If a query intentionally deviates from the local default behavior in a non-obvious way, leave a short explanation in code.
+
+### Mutation Cache Behavior Must Be Explicit
+
+Every mutation must intentionally choose one of these outcomes:
+
+- Invalidate the affected queries
+- Update the cache from the authoritative mutation response
+- Navigate away so stale client state is no longer being shown
+
+Do not leave post-mutation cache behavior implicit.
+
 ---
 
-## 5. State Management
+## 5. State, Effect, Form, and Component Rules
 
-- **Server state**: TanStack Query (the default for anything from the API).
-- **Client state**: Zustand, only when necessary for UI state that doesn't belong on the server.
-- Keep server state and UI state clearly separated.
+### Use Effect Only For External Synchronization
 
----
+- Use `useEffect` to synchronize with external systems: browser APIs, subscriptions, imperative third-party widgets, timers that are truly side effects.
+- Do not use `useEffect` to derive render data from props or other local state.
+- Do not use `useEffect` as the primary server-data fetching mechanism when TanStack Query or the reviewed route/data pattern should own that work.
+- If a value can be computed during render from existing props/state, compute it there instead of storing derived state and syncing it with an Effect.
 
-## 6. Forms
+### State Structure Rules
+
+- Avoid redundant, duplicate, or contradictory state.
+- Do not mirror props into state unless intentionally creating a user-editable draft.
+- Prefer storing stable identifiers over storing copied selected objects in component state when the source object already exists elsewhere.
+- Keep state minimal and normalize or flatten nested state when updates become difficult to reason about.
+- When route or entity identity changes, reset local state intentionally rather than accidentally carrying it across context changes.
+
+### Forms
 
 - React Hook Form for non-trivial forms.
 - Validation constraints consistent with backend rules.
 - Reusable form sections over giant monolithic forms.
+- Keep UI state distinct from server state.
+- Use Zustand for client-side state only when local component state or query state is insufficient.
+
+### URL, Cookie, and Store Ownership
+
+- Shareable navigation state belongs in the URL (route params, search params).
+- Persistent default-context state may live in cookies when it influences app entry behavior.
+- Zustand is for client-side UI/application state, not for server data already owned by TanStack Query.
+- Do not put route-shaped or shareable navigation state into Zustand when the URL should be the source of truth.
+- Do not duplicate the same state across URL, query cache, and Zustand unless there is a clearly documented reason.
+
+### Pending UI Is Required
+
+- Interactive route transitions, form submissions, and important mutations must provide immediate pending feedback.
+- Do not leave navigation or submissions visually inert while async work is in flight.
+- Pending UI can be subtle, but it must be intentional and visible enough to avoid double submits and dead-end uncertainty.
 
 ---
 
-## 7. Routing and Navigation
+## 6. Routing and Navigation
 
 - React Router for all navigation.
 - Role-based route guards where the app has different user roles.
@@ -93,14 +134,14 @@ The `@/lib/api` module configures the SDK client (base URL, auth interceptor) an
 
 ---
 
-## 8. Stable Automation Selectors
+## 7. Stable Automation Selectors
 
 Interactive controls and page landmarks must have stable selectors for testing and automation:
 
 - Interactive controls: `data-testid`
 - Form inputs: semantic `id`
 - Page landmarks: `data-testid` with domain-oriented kebab-case naming
-- Reusable features: consistent prefixes (e.g., `league-create-submit`, `contest-entry-list`)
+- Reusable features: consistent prefixes (e.g., `entity-create-submit`, `list-filter-panel`)
 
 Naming rules:
 - Lowercase kebab-case
@@ -111,7 +152,7 @@ Naming rules:
 
 ---
 
-## 9. Frontend Testing
+## 8. Frontend Testing
 
 ### Tools
 
@@ -151,7 +192,7 @@ Why:
 
 ---
 
-## 10. Frontend Review Checklist
+## 9. Frontend Review Checklist
 
 Before finishing frontend work, verify:
 
