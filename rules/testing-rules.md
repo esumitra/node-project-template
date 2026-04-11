@@ -338,7 +338,6 @@ Every smoke and E2E test must trace to a documented use case. Reference the plan
 - Uses Playwright against a running app or deployed environment.
 - In CI, browser E2E runs after deploy completes (post-deploy gate).
 - Start with a minimal deploy-gate journey (login page → sign in → authenticated landing selector) before expanding to deeper product flows.
-- Until E2E login secrets are configured in CI, the browser lane should skip explicitly with a clear summary instead of failing deploy jobs.
 - Do not expand the deploy-gate lane into deeper product coverage until those product surfaces are intentionally designed and stabilized.
 
 **Use-case driven:**
