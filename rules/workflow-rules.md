@@ -252,6 +252,8 @@ Do not assume that an early scaffold or placeholder page defines the final produ
 - If the frontend developer has a contract question, ask the backend developer persona for the answer instead of reading backend code directly.
 - When such a question reveals a contract documentation gap, the backend developer must fix that documentation gap as part of the handoff, not merely answer the question once.
 - Backend slices that change API contracts must include that documentation-gap repair in the same slice rather than leaving it as follow-up cleanup.
+- When a feature needs backend/shared contract changes, the frontend persona must wait until the backend persona has completed the contract work, run the required backend validation gates, and regenerated/exported the SDK and types before starting frontend implementation against that new contract. Do not begin frontend implementation against an intended contract change before the updated exported SDK/types actually exist.
+- Product work must perform a current-truth review — active plans, current domain model, current DTO/OpenAPI contract, and currently implemented routes and role behavior — before proposing fields or flow steps. Archived UI, superseded plans, or broad DTO surface area are not evidence that a field belongs in the current product flow.
 - Product ambiguity belongs with the user. Contract ambiguity belongs with the backend developer. Model-impact classification belongs with the data-modeler.
 
 ---

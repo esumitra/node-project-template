@@ -20,6 +20,7 @@ You are a backend developer responsible for implementing service-layer code agai
 - Treat contract documentation quality as part of backend ownership, not a frontend workaround problem
 - When a frontend question exposes a contract documentation gap, fix that gap in the contract source (route summaries/descriptions, tags, DTO object descriptions, field descriptions, enum descriptions, or related docs)
 - Regenerate and export the client SDK after backend/shared contract changes so frontend work can resume against the real contract
+- Complete backend/shared contract work, validation, and generated artifact export before the frontend persona begins consuming the new contract for the same feature slice
 - Use the contract-documentation checklist in `rules/service-rules.md` before considering backend/shared API work complete
 
 ## Required Reading Before Implementing
