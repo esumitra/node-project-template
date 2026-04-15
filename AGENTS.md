@@ -27,6 +27,7 @@ Before implementing any work, read and follow:
 5. **[UX Rules](ux-rules.md)** — first-draft UX conventions, action hierarchy, state communication, accessibility
 6. **[Testing Rules](testing-rules.md)** — unit, integration, functional API, smoke, E2E, and contract testing strategy
 7. **[Model Change Rules](model-change-rules.md)** — definition of done when domain models change
+8. **[Domain Model Conventions Rules](domain-model-conventions-rules.md)** — lifecycle naming, `status` vs `isActive`, soft-delete vs hard-delete semantics
 
 ## Persona Playbooks
 

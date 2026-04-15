@@ -1,5 +1,7 @@
 # Model Change Rules
 
+For domain-model consistency conventions such as `isActive` vs `status`, soft-delete vs hard-delete semantics, and lifecycle naming defaults, see [domain-model-conventions-rules.md](domain-model-conventions-rules.md).
+
 ## Definition of Done for Backend Slices
 
 A backend slice that changes the domain model is not done until all applicable layers are updated:
@@ -52,6 +54,8 @@ If a model change leaves any affected suite failing because those test-support l
 - [ ] Update route schemas using `zodToJsonSchema()`
 - [ ] Ensure `operationId`, `summary`, `tags` are correct
 - [ ] Add or refresh descriptions where field/object/endpoint meaning is not obvious from names alone
+- [ ] Remove orphaned DTOs/schemas that are no longer referenced by active routes or handlers. Do not keep dead contract exports alive "just in case."
+- [ ] If a DTO intentionally differs from the domain model, document why in the active plan notes or code comments instead of leaving the mismatch implicit.
 - [ ] Run `npm run api:refresh`
 - [ ] Run `npm run api:validate`
 
@@ -77,6 +81,7 @@ If a model change leaves any affected suite failing because those test-support l
 - [ ] Remove or replace stale tests that were enforcing old architecture
 - [ ] Add DB-backed CRUD coverage for new or materially redesigned domain objects, including `findById`
 - [ ] Add use-case-driven tests that prove the backend supports the documented workflows for the changed domain area
+- [ ] Remove invented placeholder values in service output paths that only existed to satisfy stale DTOs or retired model assumptions
 
 ### 5A. Test-Impact Rule for Model Changes
 

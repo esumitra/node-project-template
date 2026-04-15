@@ -8,6 +8,7 @@ All plan documents and implementation work must conform to these rules. This is 
 - **[UX Rules](ux-rules.md)** — first-draft UX conventions, action hierarchy, state communication, accessibility
 - **[Testing Rules](testing-rules.md)** — unit, integration, functional API, smoke, and browser E2E rules
 - **[Workflow Rules](workflow-rules.md)** — spec-driven lifecycle, plan tracking, and rule maintenance
+- **[Domain Model Conventions Rules](domain-model-conventions-rules.md)** — lifecycle naming, `status` vs `isActive`, and shared domain-model consistency defaults
 
 ---
 

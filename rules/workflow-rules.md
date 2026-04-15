@@ -101,6 +101,7 @@ When finishing work:
 - If slice work exposes adjacent-slice files or tasks, stop and report that spillover instead of bundling it.
 - Update plan rows only for the exact slice being worked. Do not mark unrelated items `Done`.
 - Mark a slice `Done` only when all applicable layers are complete and validated. Partial work stays `In Progress`.
+- If code cleanup resolves a previously logged plan finding, reconcile that plan finding in the same or immediately following slice. Do not leave active plans implying drift that no longer exists in the codebase.
 
 ### Slice Completion Checklist (Required Before Marking Done)
 
@@ -218,7 +219,11 @@ When designing new webapp features or product flows, the design review must expl
 
 Confirm those backend implications with the project owner before implementation begins.
 
+When those implications suggest a true model change, route them through the data-modeler and have the review explicitly check [domain-model-conventions-rules.md](domain-model-conventions-rules.md) before backend implementation begins.
+
 Do not assume that an early scaffold or placeholder page defines the final product flow. Plans should be use-case driven and confirmed with the project owner before implementation expands.
+
+For browser-E2E planning, prefer real user/role lifecycle flows over root-admin or test-only shortcuts. If cleanup or setup appears to need privileged APIs, first ask whether the real product lifecycle should own that behavior instead.
 
 ---
 
@@ -247,6 +252,7 @@ Do not assume that an early scaffold or placeholder page defines the final produ
   - UI-only
   - contract-only
   - a real model/domain/persistence change
+- The data-modeler review must happen before backend implementation begins on any feature where model, DTO, contract, or persistence impact is plausible. Do not skip directly from frontend/product discovery to backend coding when that classification step is still unresolved.
 - If the change is not obvious and clear from the reviewed plan, confirm the backend/model implication with the user before implementation continues.
 - Backend/shared changes discovered during frontend work must be implemented by the backend developer persona, not by the frontend developer persona.
 - If the frontend developer has a contract question, ask the backend developer persona for the answer instead of reading backend code directly.

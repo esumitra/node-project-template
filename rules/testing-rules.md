@@ -363,6 +363,23 @@ Every smoke and E2E test must trace to a documented use case. Reference the plan
 **Error detection:**
 - Every E2E test must assert no uncaught exceptions, no console errors, and no error boundary fallback UI.
 
+### Long-Term Browser E2E Strategy
+
+- Prefer a small number of long-lived browser journeys over many overlapping scripts.
+- Start with one primary role-centric script and extend it as new functionality for that role is added.
+- Add additional browser scripts only when a different user role or a clearly separate journey cannot be covered cleanly inside the primary script.
+- When additional scripts are needed, split by role or truly distinct journey, not by arbitrary feature duplication.
+- Do not create multiple scripts for the same role unless there is a concrete reason that one journey can no longer stay coherent.
+
+### Browser E2E Cleanup Rules
+
+- Browser E2E should not rely on application seed data, legacy QA state, or ambient existing records.
+- Browser E2E should create the data it needs through truthful user-facing flows whenever practical.
+- Prefer cleanup through real product lifecycle APIs and UI flows rather than privileged backdoors.
+- Long-term target: each role-owned journey cleans up its data through real lifecycle flows for that role (e.g., owner-owned resources via owner lifecycle flows, account-owned state via self-service account lifecycle flows).
+- If the real product lifecycle needed for cleanup does not yet exist, keep the deploy-gate browser lane minimal rather than keeping broader residue-creating journeys active.
+- Do not expand the deploy-gate browser suite with new residue-creating flows unless the cleanup path for those flows is also designed and tracked.
+
 ---
 
 ## 12. MSW Rules

@@ -1,5 +1,7 @@
 # Service Rules
 
+For domain-model consistency conventions such as lifecycle-field naming, `status` vs `isActive`, and soft-delete defaults, see [domain-model-conventions-rules.md](domain-model-conventions-rules.md).
+
 These rules govern backend services, especially Fastify modules, Prisma-backed services, DTOs, mappers, and OpenAPI generation.
 
 ---
@@ -20,6 +22,7 @@ These rules govern backend services, especially Fastify modules, Prisma-backed s
 - Returning raw Prisma entities directly from handlers
 - Defining a route without a real `schema.response`
 - Shipping mock data or development-only fallbacks in application code
+- Shipping sentinel fallback values such as `''`, `'UNKNOWN'`, or similar invented placeholders in API-facing service output
 - Hand-editing generated OpenAPI/client output
 - Fixing generated-client problems with frontend casts instead of repairing backend schemas
 
@@ -101,6 +104,8 @@ That means:
 - Document enums/status values when names alone do not explain lifecycle or behavior.
 
 If a frontend question reveals that the contract meaning was not clear from the documented API surface, treat that as a backend documentation defect and fix it in the contract source.
+
+If a DTO or schema is no longer used by any active route, remove it instead of leaving it exported as orphaned contract surface.
 
 ### Contract Documentation Checklist
 
