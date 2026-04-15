@@ -232,6 +232,22 @@ For browser-E2E planning, prefer real user/role lifecycle flows over root-admin 
 - Persona playbooks may live under `agents/` to scope role-specific workflows such as product management, project management, data modeling, backend implementation, frontend implementation, architecture/platform work, and code review.
 - These playbooks are execution aids, not replacement policy sources.
 - `AGENTS.md` and `rules/` remain canonical.
+- Formal persona names remain the canonical workflow language in plans, rules, and handoffs. Nicknames are optional shorthand for prompts, logs, worker updates, and conversational references.
+- When a nickname is used, it must map to exactly one formal persona and must not replace the formal responsibility definition.
+- If a new persona is added later, assign a unique nickname in the persona file and add it to the table below rather than inventing ad hoc shorthand in worker prompts.
+
+Current persona nickname map:
+
+| Formal Persona | Nickname | Notes |
+|---|---|---|
+| Data Modeler | Dom | Model and contract impact classification |
+| Backend Developer | Brad | Service, DTO, OpenAPI, and test implementation |
+| Frontend Developer | Fran | Web UI and browser-flow delivery |
+| Product Manager | Pam | Product/use-case clarification and review |
+| Project Manager | Parker | Plan shaping, sequencing, and reconciliation |
+| Architect | Archie | Cross-cutting architecture and platform work |
+| Code Reviewer | Riley | Findings-first review and risk detection |
+
 - Cross-cutting workflow requirements remain mandatory for all personas, including:
   - Checking for active plans
   - Updating task rows for the exact slice worked

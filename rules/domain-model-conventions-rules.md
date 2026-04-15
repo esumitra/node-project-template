@@ -105,6 +105,7 @@ When a field is intentionally constrained to a closed set of values, model it as
 
 Use enum-backed modeling for:
 
+- Persistence schema enums when the storage tier supports them and the value set is stable
 - Shared domain enums (e.g. `packages/shared/domain/enums.ts`)
 - Shared domain types
 - DTO schemas
@@ -118,6 +119,14 @@ Do not use free-form `string` when the product meaning is actually:
 - A known workflow state
 
 If persistence still stores a broad string temporarily, document that as transitional debt and keep the API/domain surface strongly typed.
+
+For closed sets that are stable enough to persist strongly:
+
+- Use a first-class enum in the persistence schema rather than a broad `String` column.
+- Keep mapper logic explicit when persistence enum identifiers differ from the API/domain literals.
+- Normalize legacy values during migration rather than preserving stale aliases indefinitely.
+
+Do not leave persistence as free-form text once the repo has high confidence that the values are closed, reviewed, and actively used in product/API flows.
 
 ---
 
