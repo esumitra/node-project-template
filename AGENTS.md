@@ -28,12 +28,14 @@ Before implementing any work, read and follow:
 6. **[Testing Rules](testing-rules.md)** — unit, integration, functional API, smoke, E2E, and contract testing strategy
 7. **[Model Change Rules](model-change-rules.md)** — definition of done when domain models change
 8. **[Domain Model Conventions Rules](domain-model-conventions-rules.md)** — lifecycle naming, `status` vs `isActive`, soft-delete vs hard-delete semantics
+9. **[Application Specification Rules](application-specification-rules.md)** — technology-neutral application-spec output rules, source-of-truth hierarchy, and rebuild-document structure
 
 ## Persona Playbooks
 
 The `agents/` directory contains role-scoped playbooks for common kinds of work:
 
 - `agents/product-manager.md` — requirements discovery, use-case design, UX flow review
+- `agents/application-specification-builder.md` — technology-neutral rebuild specifications and downstream handoff docs
 - `agents/project-manager.md` — slicing work, sequencing, plan reconciliation
 - `agents/data-modeler.md` — domain model derivation, Mermaid diagrams, data dictionaries
 - `agents/architect.md` — design plans, execution slices, CI/CD, infrastructure
