@@ -322,13 +322,13 @@ Add Tom to the nickname table in `rules/workflow-rules.md`:
 
 | ID | Phase | Task | Status | Notes |
 |---|---|---|---|---|
-| 02-001 | 1 | Draft `rules/product-requirements-rules.md` codifying §1 | Not Started | |
-| 02-002 | 1 | Draft `rules/technical-specification-rules.md` codifying §3 | Not Started | |
-| 02-003 | 2 | Update `agents/product-manager.md` (Pam) with §1.2 deliverables, use case template, Mode A/B operating sequences, and MUST-HAVE handoff checklist | Not Started | |
-| 02-004 | 2 | Create `agents/technical-specification-creator.md` (Tom) per §3 | Not Started | |
-| 02-005 | 2 | Update `agents/data-modeler.md` (Dom) with the "Tom's subagent during greenfield" section | Not Started | |
+| 02-001 | 1 | Draft `rules/product-requirements-rules.md` codifying §1 | Deferred | Rules embedded in `agents/product-manager.md` for now; extract to dedicated file after pilot |
+| 02-002 | 1 | Draft `rules/technical-specification-rules.md` codifying §3 | Deferred | Rules embedded in `agents/technical-specification-creator.md` for now; extract after pilot |
+| 02-003 | 2 | Update `agents/product-manager.md` (Pam) with §1.2 deliverables, use case template, Mode A/B operating sequences, and MUST-HAVE handoff checklist | Done | Full rewrite with scope boundary, output bundle, confidence labels, Mode A/B, handoff floor |
+| 02-004 | 2 | Create `agents/technical-specification-creator.md` (Tom) per §3 | Done | Created with domain model, API surface, flows, JIT invocation, Dom orchestration, handoff floor |
+| 02-005 | 2 | Update `agents/data-modeler.md` (Dom) with the "Tom's subagent during greenfield" section | Done | Added greenfield subagent operating section |
 | 02-006 | 2 | ~~Update `agents/application-specification-builder.md` (Abe) with the brownfield-primary clarification~~ | Done | Abe marked dormant; Pam+Tom produce canonical specs |
-| 02-007 | 3 | Update `rules/workflow-rules.md` with the revised Phase 1–5 framing and Spec Refinement Loops | Not Started | |
-| 02-008 | 3 | Update `AGENTS.md` required reading and persona playbook list | Not Started | |
-| 02-009 | 3 | Add Tom to the nickname table in `rules/workflow-rules.md` | Not Started | |
+| 02-007 | 3 | Update `rules/workflow-rules.md` with the revised Phase 1–5 framing and Spec Refinement Loops | Done | Phase 2 rewritten for Pam; Phase 2.5 added for Tom+Dom. Spec Refinement Loop deferred to Plan 05 |
+| 02-008 | 3 | Update `AGENTS.md` required reading and persona playbook list | Done | Tom added to persona list; Pam description updated; lifecycle uses persona names; repo map updated |
+| 02-009 | 3 | Add Tom to the nickname table in `rules/workflow-rules.md` | Done | |
 | 02-010 | 4 | Pilot the Pam → Tom flow on one greenfield Mode A project and one Mode B project; capture lessons before codifying further | Not Started | Do not over-codify before real usage |
