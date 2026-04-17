@@ -28,6 +28,8 @@ Before implementing any work, read and follow:
 6. **[Testing Rules](testing-rules.md)** — unit, integration, functional API, smoke, E2E, and contract testing strategy
 7. **[Model Change Rules](model-change-rules.md)** — definition of done when domain models change
 8. **[Domain Model Conventions Rules](domain-model-conventions-rules.md)** — lifecycle naming, `status` vs `isActive`, soft-delete vs hard-delete semantics
+9. **[Product Requirements Rules](product-requirements-rules.md)** — Pam's output structure, use case template, confidence labels, handoff floor
+10. **[Technical Specification Rules](technical-specification-rules.md)** — Tom's output structure, domain model, API surface, flows, handoff floor
 ## Persona Playbooks
 
 The `agents/` directory contains role-scoped playbooks for common kinds of work:

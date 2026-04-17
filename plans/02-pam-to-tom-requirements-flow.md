@@ -322,8 +322,8 @@ Add Tom to the nickname table in `rules/workflow-rules.md`:
 
 | ID | Phase | Task | Status | Notes |
 |---|---|---|---|---|
-| 02-001 | 1 | Draft `rules/product-requirements-rules.md` codifying §1 | Deferred | Rules embedded in `agents/product-manager.md` for now; extract to dedicated file after pilot |
-| 02-002 | 1 | Draft `rules/technical-specification-rules.md` codifying §3 | Deferred | Rules embedded in `agents/technical-specification-creator.md` for now; extract after pilot |
+| 02-001 | 1 | Draft `rules/product-requirements-rules.md` codifying §1 | Done | Dedicated rule file with artifact tables, use case template, confidence labels, handoff floor, Mode B extraction rules |
+| 02-002 | 1 | Draft `rules/technical-specification-rules.md` codifying §3 | Done | Dedicated rule file with domain model, API surface, flows structure, cross-check requirements, JIT invocation |
 | 02-003 | 2 | Update `agents/product-manager.md` (Pam) with §1.2 deliverables, use case template, Mode A/B operating sequences, and MUST-HAVE handoff checklist | Done | Full rewrite with scope boundary, output bundle, confidence labels, Mode A/B, handoff floor |
 | 02-004 | 2 | Create `agents/technical-specification-creator.md` (Tom) per §3 | Done | Created with domain model, API surface, flows, JIT invocation, Dom orchestration, handoff floor |
 | 02-005 | 2 | Update `agents/data-modeler.md` (Dom) with the "Tom's subagent during greenfield" section | Done | Added greenfield subagent operating section |
