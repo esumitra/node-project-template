@@ -11,7 +11,6 @@ This document describes the end-to-end flow through the agent personas, from a p
 | Product Manager | `Pam` | Product intent: requirements, use cases, roles, glossary |
 | Technical Specification Creator | `Tom` | Feature-level tech spec: API surface, data flows, orchestrates `Dom` |
 | Data Modeler | `Dom` | Domain model: entities, fields, constraints, state machines |
-| Application Specification Builder | `Abe` | Brownfield / rebuild spec from existing code |
 | Architect | `Archie` | Cross-cutting architecture, design plans, infra, ADRs |
 | Project Manager | `Parker` | Slicing, sequencing, plan reconciliation |
 | Backend Developer | `Brad` | Service, DTOs, mappers, routes, backend tests |
@@ -76,44 +75,21 @@ The rest of the flow (`Pam → Tom → Archie → Parker → Brad / Fran → Ril
 
 ---
 
-## 3. Brownfield Flow (Existing Product)
+## 3. Per-Persona Role, Inputs, Outputs
 
-```mermaid
-flowchart TD
-    Code[(Existing Codebase<br/>contracts / plans / screens)]
-    Abe[Abe — Spec Builder]
-    Pam[Pam — Product Manager]
-    Owner([Human Product Owner])
-    Tom[Tom — Tech Spec Creator]
-    Downstream[... Dom, Archie, Parker, Brad, Fran, Riley ...]
-
-    Code -- reverse inference --> Abe
-    Abe -- specs/ draft, labeled (Inferred) --> Pam
-    Pam <-- refinement, owner confirmation --> Owner
-    Pam -- refined requirements/ or confirmed specs/ --> Tom
-    Tom --> Downstream
-```
-
-Abe produces the initial `specs/` draft; Pam and the owner upgrade `(Inferred)` items to `(Confirmed)` or move them to `open-questions.md` as `Confirmed Drift` / `Needs Review`. From that point the flow matches greenfield.
-
----
-
-## 4. Per-Persona Role, Inputs, Outputs
-
-### 4.1 Pam — Product Manager
+### 3.1 Pam — Product Manager
 
 - **Role:** Iteratively define product intent with the human owner.
 - **Inputs:**
   - Owner's vision and domain knowledge.
   - (Mode B) visual artifacts.
-  - (Brownfield) Abe's draft `specs/`.
 - **Outputs** (`requirements/`):
   - `product-requirements.md`, `roles-and-actors.md`, `glossary.md`, `domain-concepts.md`, `navigation-and-entry-points.md`.
   - Per feature: `overview.md`, `use-cases.md`, `screens.md`, `business-rules.md`, `open-questions.md`.
 - **Handoff criteria:** every item carries a confidence label; all `(Inferred)` either upgraded to `(Confirmed)` or paired with an `open-questions.md` entry; owner has signed off end-to-end.
 - **Does not produce:** schema, routes, DTOs, state machines, architecture decisions.
 
-### 4.2 Tom — Technical Specification Creator
+### 3.2 Tom — Technical Specification Creator
 
 - **Role:** Translate Pam's requirements into a rebuild-ready technical specification by orchestrating Dom and related capabilities.
 - **Inputs:**
@@ -126,7 +102,7 @@ Abe produces the initial `specs/` draft; Pam and the owner upgrade `(Inferred)` 
 - **Handoff criteria:** every Pam use case has a corresponding technical flow; every route has allowed roles and notable errors; every entity has a fields table and state machine where applicable; `open-questions.md` is empty.
 - **Does not produce:** product decisions, architecture decisions, implementation code.
 
-### 4.3 Dom — Data Modeler
+### 3.3 Dom — Data Modeler
 
 - **Role:** Formalize the domain model — fields, types, constraints, cascades, state machines — and enforce conventions from `rules/domain-model-conventions-rules.md`.
 - **Inputs:**
@@ -139,18 +115,7 @@ Abe produces the initial `specs/` draft; Pam and the owner upgrade `(Inferred)` 
   - Mid-implementation impact classification (UI-only / contract-only / real model change) when routing questions arise.
 - **Handoff criteria:** every entity has a fields table with `name | type | nullable | default | constraints`, relationships with cardinality and cascades, and state machines for any lifecycle field.
 
-### 4.4 Abe — Application Specification Builder
-
-- **Role:** Produce rebuild-ready specifications from an existing codebase. Primary persona for brownfield and migration scenarios.
-- **Inputs:**
-  - Existing application code, contracts, plans, screens.
-- **Outputs** (`specs/`):
-  - Per domain: `overview.md`, `use-cases.md`, `domain-model.md`, `api-surface.md`, `screens.md`, `flows.md`, `open-questions.md`.
-  - Shared: `glossary.md`, `roles-and-actors.md`, `navigation-and-entry-points.md`.
-- **Handoff criteria:** items labeled `(Confirmed)` / `(Inferred)` / `(Needs Review)`; owner review completes the draft before downstream personas consume it.
-- **Not used on greenfield.** Greenfield uses Pam → Tom.
-
-### 4.5 Archie — Architect
+### 3.4 Archie — Architect
 
 - **Role:** Cross-cutting architecture decisions, design plans, execution planning, CI/CD, deployment, infrastructure.
 - **Inputs:**
@@ -165,7 +130,7 @@ Abe produces the initial `specs/` draft; Pam and the owner upgrade `(Inferred)` 
   - `docs/DATABASE-SCHEMA.md` — target schema reference.
 - **Handoff criteria:** every plan has a task table; diagrams for flows that cross more than two modules; ADRs captured for durable decisions; current-state docs updated in the same slice as structural changes.
 
-### 4.6 Parker — Project Manager
+### 3.5 Parker — Project Manager
 
 - **Role:** Shape plans into executable slices, sequence work, reconcile progress.
 - **Inputs:**
@@ -177,7 +142,7 @@ Abe produces the initial `specs/` draft; Pam and the owner upgrade `(Inferred)` 
   - Reconciliation between implementation reality and plan rows.
 - **Handoff criteria:** each slice is independently committable and validatable; dependencies are explicit; task rows reflect current reality.
 
-### 4.7 Brad — Backend Developer
+### 3.6 Brad — Backend Developer
 
 - **Role:** Implement service-layer code against design plans and use cases.
 - **Inputs:**
@@ -195,7 +160,7 @@ Abe produces the initial `specs/` draft; Pam and the owner upgrade `(Inferred)` 
   - Plan row update.
 - **Handoff criteria:** full slice-completion checklist from `rules/workflow-rules.md` and contract-documentation checklist from `rules/service-rules.md` satisfied; SDK regenerated and exported before Fran consumes it.
 
-### 4.8 Fran — Frontend Developer
+### 3.7 Fran — Frontend Developer
 
 - **Role:** Build the web application against the generated SDK and the reviewed plans/use cases.
 - **Inputs:**
@@ -216,7 +181,7 @@ Abe produces the initial `specs/` draft; Pam and the owner upgrade `(Inferred)` 
   - Plan row update.
 - **Handoff criteria:** does not begin until the SDK/types for the slice actually exist; frontend review checklist from persona file satisfied.
 
-### 4.9 Riley — Code Reviewer
+### 3.8 Riley — Code Reviewer
 
 - **Role:** Audit implementation against rules, plans, use cases, and handoff completeness.
 - **Inputs:**
@@ -231,7 +196,7 @@ Abe produces the initial `specs/` draft; Pam and the owner upgrade `(Inferred)` 
 
 ---
 
-## 5. Handoff Criteria Summary Table
+## 4. Handoff Criteria Summary Table
 
 | From | To | Bundle | Gate |
 |---|---|---|---|
@@ -248,7 +213,7 @@ Abe produces the initial `specs/` draft; Pam and the owner upgrade `(Inferred)` 
 
 ---
 
-## 6. Escalation and Ambiguity Routing
+## 5. Escalation and Ambiguity Routing
 
 - **Product question** (what should this do, who can do it, why) → `Pam`.
 - **Technical contract question** (endpoint shape, schema, state machine) → `Tom` during spec; `Brad` during and after implementation.
@@ -259,7 +224,7 @@ Abe produces the initial `specs/` draft; Pam and the owner upgrade `(Inferred)` 
 
 ---
 
-## 7. Cross-Cutting Artifacts
+## 6. Cross-Cutting Artifacts
 
 These survive plan archiving and must be kept current by their owning persona:
 
@@ -276,18 +241,19 @@ These survive plan archiving and must be kept current by their owning persona:
 | `docs/frontend/ACCESSIBILITY.md` | Fran | a11y bar, tooling, manual review expectations |
 | `docs/DEPLOYMENT-READINESS.md` | Archie | Pre-deploy checklist |
 | `CHANGELOG.md` | Archie or Riley at release boundaries | Human-readable change summary |
-| `glossary.md` (`requirements/` and `specs/`) | Pam (greenfield); Abe (brownfield) | Canonical terminology |
-| `roles-and-actors.md` | Pam (greenfield); Abe (brownfield) | Role definitions and capability matrix |
+| `glossary.md` (`requirements/`) | Pam | Canonical terminology |
+| `roles-and-actors.md` | Pam | Role definitions and capability matrix |
 
 A slice is not `Done` if it introduces behavior that belongs in one of these artifacts but the artifact wasn't updated in the same slice.
 
 ---
 
-## 8. Notes on Current vs Target State
+## 7. Notes on Current vs Target State
 
-- Pam, Dom, Abe, Archie, Parker, Brad, Fran, and Riley personas exist today under `agents/`.
+- Pam, Dom, Archie, Parker, Brad, Fran, and Riley personas exist today under `agents/`.
+- Abe (Application Specification Builder) is dormant. It is retained for one-time extraction from projects that lack structured requirements but is not part of the active Pam → Tom → Archie → Brad/Fran flow.
 - Tom does not yet exist; it will be added as Plan 02 lands.
-- Several cross-cutting artifacts in §7 do not yet exist; Plan 03 scaffolds them.
+- Several cross-cutting artifacts in §6 do not yet exist; Plan 03 scaffolds them.
 - Workflow rules, rule files, and persona files will be updated to match this flow as Plans 01–03 execute.
 
 Until the plans land, personas should follow their current persona files; this document represents the target state those plans converge toward.

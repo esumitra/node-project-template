@@ -2,7 +2,9 @@
 
 ## Summary
 
-Strengthen the product-manager (`Pam`) and application-specification-builder (`Abe`) personas so they reliably produce specifications that a separate builder team can act on without reverse-engineering product intent. Cover three input modes (greenfield conversation, brownfield code analysis, visual artifacts) and define clean handoff boundaries between personas.
+Strengthen the product-manager (`Pam`) persona so it reliably produces specifications that a separate builder team can act on without reverse-engineering product intent. Cover three input modes (greenfield conversation, brownfield code analysis, visual artifacts) and define clean handoff boundaries between personas.
+
+> **Note:** The `Abe` (Application Specification Builder) persona is now dormant. Pam and Tom produce the canonical product and technical specifications for greenfield and maintained projects. Abe is retained only for one-time extraction from legacy projects that lack structured requirements.
 
 This plan has three parts:
 
@@ -92,10 +94,10 @@ Requirements gathering can begin from three distinct starting points. Each needs
 1. `Pam` (product manager persona) leads iterative discovery with the owner.
 2. Owner answers, confirms, corrects; `Pam` drafts and refines.
 3. `Pam` produces `requirements/` artifacts (project requirements, domain model sketch, module map, roles & permissions) and per-feature `plans/<NN>-<feature>-use-cases.md` drafts.
-4. `Abe` converts those artifacts into the canonical `specs/` structure with MUST-HAVE sections filled in, inline confidence labels, and acceptance criteria.
-5. Owner reviews the consolidated `specs/` set and confirms.
+4. `Tom` converts those artifacts into the canonical `tech-specs/` structure with MUST-HAVE sections filled in, inline confidence labels, and acceptance criteria.
+5. Owner reviews the consolidated `tech-specs/` set and confirms.
 
-**Confidence defaults:** `(Confirmed)` for anything the owner explicitly agreed to; `(Needs Review)` for anything `Pam` or `Abe` inferred to keep the spec coherent.
+**Confidence defaults:** `(Confirmed)` for anything the owner explicitly agreed to; `(Needs Review)` for anything `Pam` or `Tom` inferred to keep the spec coherent.
 
 **Risks to manage:**
 
@@ -106,22 +108,24 @@ Requirements gathering can begin from three distinct starting points. Each needs
 
 **Inputs:** a running or partially-built application with code, exported contracts, and/or plans.
 
-**Flow:**
+> **Note:** The `Abe` persona is dormant. For brownfield projects that lack structured requirements, Abe can be invoked as a one-time extraction tool. For maintained projects, Pam leads requirements discovery and Tom produces technical specifications, even when existing code is present.
 
-1. `Abe` produces a first-pass draft by reverse-inferring from code, exported DTOs/OpenAPI, active plans, and current routes/screens — following the source-of-truth hierarchy in `rules/application-specification-rules.md`.
+**Flow (standard path):**
+
+1. `Pam` leads requirements discovery against the existing codebase, using code, exported DTOs/OpenAPI, active plans, and current routes/screens as reference material.
 2. Every inferred item is labeled `(Inferred)` by default. Items that are clearly supported by reviewed plans can be upgraded to `(Confirmed)` during drafting.
 3. `Pam` + the owner review the draft. They:
    - Upgrade `(Inferred)` → `(Confirmed)` where the owner endorses current behavior as the intended product.
    - Downgrade `(Inferred)` → `(Needs Review)` where current behavior does not reflect desired product direction.
    - Move items to `open-questions.md` under `Confirmed Drift` when code disagrees with intent.
-4. `Abe` revises; `Pam` + owner re-review until the MUST-HAVE floor is cleared and every item carries a decisive label.
+4. `Tom` produces technical specifications from Pam's confirmed requirements.
 
 **Confidence defaults:** `(Inferred)` until the owner confirms.
 
 **Risks to manage:**
 
 - Confusing "what the app does" with "what the product should do." The owner must explicitly bless or reject each inferred behavior.
-- Treating broad DTO surface area as proof that a field belongs (already forbidden in `Pam`'s rules; needs reinforcement when `Abe` is deriving from code).
+- Treating broad DTO surface area as proof that a field belongs.
 
 ### 2.3 Mode C — Visual-First (Figma / Wireframes / Screenshots)
 
@@ -131,7 +135,7 @@ Requirements gathering can begin from three distinct starting points. Each needs
 
 1. A visual-artifact pass extracts: screen inventory, visible actions per screen, state variations shown (e.g., empty states in mockups), navigation structure, copy, role distinctions implied by which actions are visible to whom.
 2. `Pam` + the owner conduct targeted conversation to resolve non-visual questions: business rules, lifecycle semantics, authorization, error behavior, offline/async semantics, what happens off-screen.
-3. `Abe` merges the visual extract and the conversation output into the `specs/` structure, producing `screens.md` and `flows.md` primarily from the visuals, and `domain-model.md` / `api-surface.md` / `use-cases.md` primarily from the conversation.
+3. `Pam` merges the visual extract and the conversation output into the `requirements/` structure, producing `screens.md` and use cases primarily from the visuals, and domain concepts / business rules primarily from the conversation. `Tom` then produces the technical specification.
 4. Owner reviews; cycle continues until MUST-HAVE floor is cleared.
 
 **Confidence defaults:**
@@ -159,25 +163,19 @@ Regardless of mode, the spec set only exits the refinement loop when:
 
 ## 3. Process, Agent, and Boundary Improvements
 
-### 3.1 Clarify `Pam` vs `Abe` Ownership
+### 3.1 Clarify Ownership
 
-Today both personas write `domain-model.md` and `use-cases.md` — in different folders, with no rule on which supersedes the other.
-
-**Proposed boundary:**
-
-- **`Pam` owns product intent.** Deliverables live under `requirements/` and `plans/<NN>-<feature>-use-cases.md`. `Pam`'s artifacts capture the owner-confirmed vision, iteratively, and are the authoritative source of product direction.
-- **`Abe` owns the rebuild-ready specification.** Deliverables live under `specs/`. `Abe` consumes `Pam`'s artifacts plus code/contracts/visuals and produces the canonical handoff document set for downstream builder teams.
-- **When `Pam` and `Abe` disagree:** the newer and more specifically reviewed artifact wins. If reviewed at the same time, `Pam`'s product-intent artifact wins on product questions; `Abe`'s spec wins on structure/format.
-
-Write this into both persona files and `rules/application-specification-rules.md`.
+- **`Pam` owns product intent.** Deliverables live under `requirements/`. `Pam`'s artifacts capture the owner-confirmed vision, iteratively, and are the authoritative source of product direction.
+- **`Tom` owns the technical specification.** Deliverables live under `tech-specs/`. `Tom` consumes `Pam`'s artifacts and produces the canonical handoff document set for downstream builder teams.
+- **`Abe` is dormant.** Abe is retained only for one-time extraction from legacy projects without structured requirements. It is not part of the active flow.
 
 ### 3.2 Mode-Aware Operating Sequences
 
 Update `Abe`'s "Required Operating Sequence" and `Pam`'s "How You Work" to branch by input mode:
 
-- Mode A (greenfield) — `Pam` leads; `Abe` converts after owner confirms requirements.
-- Mode B (brownfield) — `Abe` drafts first from code/contracts; `Pam` + owner refine.
-- Mode C (visual-first) — visual extraction first; `Pam` resolves non-visual questions; `Abe` merges.
+- Mode A (greenfield) — `Pam` leads; `Tom` converts after owner confirms requirements.
+- Mode B (brownfield) — `Pam` leads requirements discovery against existing code; `Tom` produces technical specifications.
+- Mode C (visual-first) — visual extraction first; `Pam` resolves non-visual questions; `Tom` produces technical specifications.
 
 Make the default confidence-labeling rule per mode explicit (see §2).
 
@@ -185,10 +183,10 @@ Make the default confidence-labeling rule per mode explicit (see §2).
 
 Mode C has no owner today. Options:
 
-- **Option 1:** Extend `Abe` with a "visual extraction" capability and require the owner to attach artifacts during the operating sequence.
-- **Option 2:** Add a lightweight new persona (e.g., `Vera` — visual requirements analyzer) whose only job is extracting a structured screen/action/nav/state inventory from visuals, which then feeds `Abe`.
+- **Option 1:** Extend `Pam` with a "visual extraction" capability and require the owner to attach artifacts during the operating sequence.
+- **Option 2:** Add a lightweight new persona (e.g., `Vera` — visual requirements analyzer) whose only job is extracting a structured screen/action/nav/state inventory from visuals, which then feeds `Pam`.
 
-**Recommendation:** start with Option 1 to avoid persona proliferation. Promote to Option 2 only if visual-heavy projects routinely push `Abe` beyond what a single persona can cover.
+**Recommendation:** start with Option 1 to avoid persona proliferation. Promote to Option 2 only if visual-heavy projects routinely push `Pam` beyond what a single persona can cover.
 
 ### 3.4 Confidence-Label Rules
 
@@ -214,11 +212,11 @@ Upgrade `rules/application-specification-rules.md` §8 (File Content Rules) from
 
 Add to `rules/workflow-rules.md` a named phase between draft and handoff:
 
-- **Spec Refinement Loop** — while any `(Inferred)` item exists without a corresponding `Needs Review` entry, the spec cycle continues: `Abe` revises, `Pam` + owner re-review. Builder-team handoff is blocked until the MUST-HAVE floor is cleared and every item is labeled decisively.
+- **Spec Refinement Loop** — while any `(Inferred)` item exists without a corresponding `Needs Review` entry, the spec cycle continues: `Pam` revises, owner re-reviews. Builder-team handoff is blocked until the MUST-HAVE floor is cleared and every item is labeled decisively.
 
 ### 3.7 Handoff Checklist
 
-Formalize what `Abe` produces as the handoff artifact. Before handing off to builders:
+Formalize what the specification phase produces as the handoff artifact. Before handing off to builders:
 
 - All MUST-HAVE files exist and are populated per §1.2.
 - All items carry confidence labels; no unaccompanied `(Inferred)`.
@@ -236,8 +234,8 @@ Formalize what `Abe` produces as the handoff artifact. Before handing off to bui
 | 01-002 | 1 | Add confidence-label rule (`Confirmed` / `Inferred` / `Needs Review`) to `rules/application-specification-rules.md`, with default labels per input mode | Not Started | |
 | 01-003 | 1 | Add MUST-HAVE vs NICE-TO-HAVE tiering to `rules/application-specification-rules.md` | Not Started | |
 | 01-004 | 2 | Update `agents/product-manager.md` with mode-aware operating sequence (A/B/C) and deliverable boundary | Not Started | |
-| 01-005 | 2 | Update `agents/application-specification-builder.md` with mode-aware operating sequence and visual-extraction capability (Option 1 from §3.3) | Not Started | |
-| 01-006 | 2 | Document `Pam` vs `Abe` ownership boundary in both persona files and in `rules/application-specification-rules.md` | Not Started | |
+| 01-005 | 2 | ~~Update `agents/application-specification-builder.md` with mode-aware operating sequence and visual-extraction capability~~ | Removed | Abe is dormant; Pam+Tom produce canonical specs |
+| 01-006 | 2 | Document `Pam` vs `Tom` ownership boundary in persona files and rules | Not Started | |
 | 01-007 | 3 | Add Spec Refinement Loop phase to `rules/workflow-rules.md` with builder-handoff block condition | Not Started | |
 | 01-008 | 3 | Add builder-handoff checklist to `rules/application-specification-rules.md` | Not Started | |
 | 01-009 | 4 | Evaluate whether visual-extraction warrants a dedicated persona (Option 2) after 2–3 projects use Option 1 | Not Started | Revisit after real usage |

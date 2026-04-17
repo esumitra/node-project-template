@@ -1,5 +1,7 @@
 # Application Specification Rules
 
+> **Dormant.** This rule file supports the dormant `Abe` persona. For active greenfield and maintained projects, product requirements live in `requirements/` (Pam) and technical specifications live in `tech-specs/` (Tom). These rules apply only when performing a one-time extraction from a project that lacks structured requirements.
+
 ## 1. Purpose
 
 Application specifications exist to describe how the application can be recreated or re-implemented from scratch without coupling the specification to the current technology stack.

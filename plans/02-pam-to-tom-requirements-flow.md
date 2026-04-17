@@ -9,7 +9,7 @@ This plan covers two starting conditions:
 - **Mode A** — no previous product exists; human product manager has a vision only.
 - **Mode B** — no previous product exists, but the human product manager has screenshots, wireframes, Figma frames, or other visuals to communicate use cases.
 
-Brownfield and rebuild situations remain `Abe`'s territory and are out of scope for this plan.
+Brownfield and rebuild situations that lack structured requirements can use the dormant `Abe` persona for one-time extraction, but the active flow for all maintained projects is Pam → Tom.
 
 ---
 
@@ -253,9 +253,7 @@ Implementation personas must not reverse-infer product intent from code when a P
 
 ### 4.3 Where Abe Fits
 
-Abe remains the canonical persona for **brownfield** and **rebuild** scenarios (existing code → rebuild specification). Abe's `specs/` artifact is not produced on greenfield work covered by this plan — greenfield projects use `requirements/` (Pam) + `tech-specs/` (Tom) instead.
-
-If a greenfield project later needs an Abe-style rebuild spec for migration or vendor handoff, Abe can be invoked post-hoc to consolidate the `requirements/` + `tech-specs/` + implementation into a `specs/` set.
+Abe is dormant in the standard lifecycle. Pam and Tom produce the canonical product and technical specifications for both greenfield and maintained projects. Abe is retained only for one-time extraction from legacy projects that were built without structured requirements -- it is not part of the active Pam → Tom → Archie → Brad/Fran flow.
 
 ### 4.4 Ambiguity Routing
 
@@ -282,7 +280,7 @@ If a greenfield project later needs an Abe-style rebuild spec for migration or v
   - Phase 4: Execution Plans (Archie)
   - Phase 5: Implementation (Brad, Fran)
   - Add a Spec Refinement Loop between Phase 1 and Phase 2, and between Phase 2 and Phase 3.
-- `rules/application-specification-rules.md` — clarify that Abe operates in brownfield/rebuild mode; greenfield uses Pam + Tom.
+- `rules/application-specification-rules.md` — now marked dormant; Abe operates only for one-time legacy extraction.
 - `AGENTS.md` — add the new rule files to required reading, add Tom to the persona playbook list.
 
 ### 5.3 New Persona File
@@ -329,7 +327,7 @@ Add Tom to the nickname table in `rules/workflow-rules.md`:
 | 02-003 | 2 | Update `agents/product-manager.md` (Pam) with §1.2 deliverables, use case template, Mode A/B operating sequences, and MUST-HAVE handoff checklist | Not Started | |
 | 02-004 | 2 | Create `agents/technical-specification-creator.md` (Tom) per §3 | Not Started | |
 | 02-005 | 2 | Update `agents/data-modeler.md` (Dom) with the "Tom's subagent during greenfield" section | Not Started | |
-| 02-006 | 2 | Update `agents/application-specification-builder.md` (Abe) with the brownfield-primary clarification | Not Started | |
+| 02-006 | 2 | ~~Update `agents/application-specification-builder.md` (Abe) with the brownfield-primary clarification~~ | Done | Abe marked dormant; Pam+Tom produce canonical specs |
 | 02-007 | 3 | Update `rules/workflow-rules.md` with the revised Phase 1–5 framing and Spec Refinement Loops | Not Started | |
 | 02-008 | 3 | Update `AGENTS.md` required reading and persona playbook list | Not Started | |
 | 02-009 | 3 | Add Tom to the nickname table in `rules/workflow-rules.md` | Not Started | |
