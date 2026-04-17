@@ -1,27 +1,29 @@
 # Persona Flow and Handoffs
 
-This document describes the end-to-end flow through the agent personas, from a product idea to shipped code. It reflects the target state proposed in `plans/01-spec-process-improvement.md`, `plans/02-pam-to-tom-requirements-flow.md`, and `plans/03-archie-brad-fran-handoff-review.md`. Some artifacts referenced here (`tech-specs/`, `docs/adr/`, frontend registries, runbooks) will be scaffolded as those plans land.
+This document describes the end-to-end flow through the agent personas, from a product idea to shipped code.
+
+**Active execution plan:** `plans/04-minimal-pam-tom-rollout.md` — tightens Pam, introduces Tom minimally, and leaves Archie/Brad/Fran/Riley untouched. Items marked *(future)* below are proposed in `plans/02-pam-to-tom-requirements-flow.md` and `plans/03-archie-brad-fran-handoff-review.md` and will land after a pilot.
 
 ---
 
 ## 1. Persona Roster
 
-| Persona | Nickname | Scope |
-|---|---|---|
-| Product Manager | `Pam` | Product intent: requirements, use cases, roles, glossary |
-| Technical Specification Creator | `Tom` | Feature-level tech spec: API surface, data flows, orchestrates `Dom` |
-| Data Modeler | `Dom` | Domain model: entities, fields, constraints, state machines |
-| Architect | `Archie` | Cross-cutting architecture, design plans, infra, ADRs |
-| Project Manager | `Parker` | Slicing, sequencing, plan reconciliation |
-| Backend Developer | `Brad` | Service, DTOs, mappers, routes, backend tests |
-| Frontend Developer | `Fran` | React pages, hooks, components, frontend tests |
-| Code Reviewer | `Riley` | Rule/plan/use-case audits, handoff-completeness review |
+| Persona | Nickname | Status | Scope |
+|---|---|---|---|
+| Product Manager | `Pam` | Active | Product intent: requirements, use cases, roles, glossary |
+| Technical Specification Creator | `Tom` | New (Plan 04) | Feature-level tech spec: API surface, data flows, orchestrates `Dom` |
+| Data Modeler | `Dom` | Active | Domain model: entities, fields, constraints, state machines |
+| Architect | `Archie` | Active | Cross-cutting architecture, design plans, infra |
+| Project Manager | `Parker` | Active | Slicing, sequencing, plan reconciliation |
+| Backend Developer | `Brad` | Active | Service, DTOs, mappers, routes, backend tests |
+| Frontend Developer | `Fran` | Active | React pages, hooks, components, frontend tests |
+| Code Reviewer | `Riley` | Active | Rule/plan/use-case audits |
 
 Formal names remain canonical in plans and rules. Nicknames are shorthand only.
 
 ---
 
-## 2. Greenfield Flow (No Existing Product)
+## 2. Flow Diagram
 
 ### 2.1 Mode A — Vision Only
 
@@ -42,14 +44,14 @@ flowchart TD
     Tom <-- domain model iteration --> Dom
     Tom -- tech-specs/ bundle --> Archie
     Pam -- requirements/ bundle --> Archie
-    Archie -- plans/ + ADRs + docs/ --> Parker
+    Archie -- plans/ --> Parker
     Parker -- sliced plan rows --> Brad
     Parker -- sliced plan rows --> Fran
     Brad -- regenerated SDK + contract docs --> Fran
-    Brad -- slice summary --> Riley
-    Fran -- slice summary --> Riley
-    Riley -. findings back .-> Brad
-    Riley -. findings back .-> Fran
+    Brad -- code for review --> Riley
+    Fran -- code for review --> Riley
+    Riley -. findings .-> Brad
+    Riley -. findings .-> Fran
     Fran -. contract questions .-> Brad
     Fran -. model-impact questions .-> Dom
 ```
@@ -71,7 +73,7 @@ flowchart TD
     Pam -- requirements/ bundle --> Downstream
 ```
 
-The rest of the flow (`Pam → Tom → Archie → Parker → Brad / Fran → Riley`) is identical to Mode A.
+The rest of the flow is identical to Mode A.
 
 ---
 
@@ -84,36 +86,38 @@ The rest of the flow (`Pam → Tom → Archie → Parker → Brad / Fran → Ril
   - Owner's vision and domain knowledge.
   - (Mode B) visual artifacts.
 - **Outputs** (`requirements/`):
-  - `product-requirements.md`, `roles-and-actors.md`, `glossary.md`, `domain-concepts.md`, `navigation-and-entry-points.md`.
+  - Product-level: `product-requirements.md`, `roles-and-actors.md`, `glossary.md`, `domain-concepts.md`, `navigation-and-entry-points.md`.
   - Per feature: `overview.md`, `use-cases.md`, `screens.md`, `business-rules.md`, `open-questions.md`.
-- **Handoff criteria:** every item carries a confidence label; all `(Inferred)` either upgraded to `(Confirmed)` or paired with an `open-questions.md` entry; owner has signed off end-to-end.
-- **Does not produce:** schema, routes, DTOs, state machines, architecture decisions.
+- **Use case template:** Actor, Goal, Confidence label, Preconditions, Normal flow, Alternate flows, Error paths, Postconditions, Acceptance criteria, Business rules referenced.
+- **Confidence labels:** `(Confirmed)` / `(Inferred)` / `(Needs Review)` on every use case, screen, and business rule.
+- **Handoff criteria:** all files exist; every item labeled; no unclassified open questions; owner signed off end-to-end.
+- **Does not produce:** schema, routes, DTOs, field-level types/constraints, state machines, architecture decisions.
 
 ### 3.2 Tom — Technical Specification Creator
 
-- **Role:** Translate Pam's requirements into a rebuild-ready technical specification by orchestrating Dom and related capabilities.
+- **Role:** Convert Pam's owner-confirmed requirements into a feature-level technical specification by orchestrating Dom.
 - **Inputs:**
-  - Pam's complete `requirements/` bundle.
+  - Pam's complete `requirements/` bundle with owner sign-off.
   - `rules/domain-model-conventions-rules.md`.
-  - Owner confirmation that the Pam bundle is stable.
-- **Outputs** (`tech-specs/`):
-  - Per feature: `domain-model.md` (owned by Dom), `api-surface.md`, `flows.md`, `integration-notes.md`, `open-questions.md`.
-  - Project-level: `domain-model.md` (consolidated), `error-envelope.md`, `auth-model.md`.
-- **Handoff criteria:** every Pam use case has a corresponding technical flow; every route has allowed roles and notable errors; every entity has a fields table and state machine where applicable; `open-questions.md` is empty.
+- **Outputs** (`tech-specs/features/<feature-slug>/`):
+  - `domain-model.md` (owned by Dom, reviewed by Tom) — fields table, relationships, state machines, invariants.
+  - `api-surface.md` — route inventory with method, route, purpose, request/response DTOs, allowed roles, notable errors.
+  - `flows.md` — per use case: trigger, screen → API → service → persistence sequence, error branches, state transitions.
+  - `open-questions.md`.
+  - *(future)* Project-level: consolidated `domain-model.md`, `error-envelope.md`, `auth-model.md`, `integration-notes.md`.
+- **Handoff criteria:** every Pam use case has a corresponding flow; every route has roles + errors; every entity has a fields table; `open-questions.md` is empty; naming matches Pam's glossary.
 - **Does not produce:** product decisions, architecture decisions, implementation code.
 
 ### 3.3 Dom — Data Modeler
 
-- **Role:** Formalize the domain model — fields, types, constraints, cascades, state machines — and enforce conventions from `rules/domain-model-conventions-rules.md`.
+- **Role:** Formalize the domain model and enforce conventions from `rules/domain-model-conventions-rules.md`.
 - **Inputs:**
   - Pam's `domain-concepts.md` and `business-rules.md`.
   - Tom's request for a technical domain model.
-  - Convention rules.
 - **Outputs:**
-  - `tech-specs/features/<feature>/domain-model.md` (during greenfield, as Tom's subagent).
-  - `tech-specs/domain-model.md` (consolidated model, jointly with Tom).
-  - Mid-implementation impact classification (UI-only / contract-only / real model change) when routing questions arise.
-- **Handoff criteria:** every entity has a fields table with `name | type | nullable | default | constraints`, relationships with cardinality and cascades, and state machines for any lifecycle field.
+  - `tech-specs/features/<feature>/domain-model.md` (as Tom's subagent during greenfield).
+  - Mid-implementation impact classification (UI-only / contract-only / real model change).
+- **Handoff criteria:** every entity has a fields table (`name | type | nullable | default | constraints`), relationships with cardinality and cascades, and state machines for lifecycle fields.
 
 ### 3.4 Archie — Architect
 
@@ -121,14 +125,14 @@ The rest of the flow (`Pam → Tom → Archie → Parker → Brad / Fran → Ril
 - **Inputs:**
   - Pam's `requirements/`.
   - Tom's `tech-specs/`.
-  - Existing ADRs and architecture docs.
 - **Outputs:**
-  - `plans/<NN>-<feature>.md` — design plans with diagrams, infra checklist, rollback, feature-flag, observability, perf, and security-review sections.
-  - `docs/adr/<NNNN>-<slug>.md` — ADRs for decisions with lifetime beyond a single feature.
-  - `docs/ARCHITECTURE.md` — maintained current-state overview.
-  - `docs/INFRASTRUCTURE.md` — maintained what-runs-where inventory.
+  - `plans/<NN>-<feature>.md` — design plans with Key Decisions, Data Model Changes, API Surface, Dependencies, Deferred, and Action Plan task table.
   - `docs/DATABASE-SCHEMA.md` — target schema reference.
-- **Handoff criteria:** every plan has a task table; diagrams for flows that cross more than two modules; ADRs captured for durable decisions; current-state docs updated in the same slice as structural changes.
+  - *(future)* `docs/adr/` — architecture decision records.
+  - *(future)* `docs/ARCHITECTURE.md` — current-state system overview.
+  - *(future)* `docs/INFRASTRUCTURE.md` — what-runs-where inventory.
+  - *(future)* Extended plan template with diagrams, infra checklist, rollback, feature-flag, observability, perf, security-review sections.
+- **Handoff criteria:** every plan has a task table; design plans reference the use cases they implement.
 
 ### 3.5 Parker — Project Manager
 
@@ -152,12 +156,13 @@ The rest of the flow (`Pam → Tom → Archie → Parker → Brad / Fran → Ril
 - **Outputs:**
   - Prisma schema + migration; service/repo logic; Zod DTOs; mappers; Fastify route schemas; regenerated OpenAPI/SDK.
   - Unit, DB-integration, and SDK functional-API tests.
-  - Contract documentation inline in DTOs and route descriptions, including request/response examples and pagination/idempotency/timeout semantics for non-trivial routes.
-  - Migration runbook for non-trivial migrations.
-  - `docs/FEATURE-FLAGS.md` updates when flags change.
-  - `docs/RUNBOOKS/` entries for new production-visible surfaces.
-  - Slice summary (paragraph + changed-files list) for Riley.
+  - Contract documentation inline in DTOs and route descriptions.
   - Plan row update.
+  - *(future)* Slice summary artifact for Riley.
+  - *(future)* Request/response examples and pagination/idempotency/timeout docs for non-trivial routes.
+  - *(future)* Migration runbook for non-trivial migrations.
+  - *(future)* `docs/FEATURE-FLAGS.md` updates.
+  - *(future)* `docs/RUNBOOKS/` entries.
 - **Handoff criteria:** full slice-completion checklist from `rules/workflow-rules.md` and contract-documentation checklist from `rules/service-rules.md` satisfied; SDK regenerated and exported before Fran consumes it.
 
 ### 3.7 Fran — Frontend Developer
@@ -173,26 +178,26 @@ The rest of the flow (`Pam → Tom → Archie → Parker → Brad / Fran → Ril
   - Vitest unit tests and MSW-backed integration tests.
   - Loading/error/empty/success state handling.
   - Stable `data-testid` selectors.
-  - `docs/frontend/COMPONENT-INVENTORY.md` updates when shared components are added.
-  - `docs/frontend/ANALYTICS-EVENTS.md` updates when events are emitted.
-  - `docs/frontend/ACCESSIBILITY.md` attestation at slice close.
-  - Contract-question artifacts when ambiguity arises (structured "what I needed / what docs say / proposed clarification").
-  - Slice summary for Riley.
   - Plan row update.
+  - *(future)* Slice summary artifact for Riley.
+  - *(future)* Contract-question artifacts (structured format for Brad).
+  - *(future)* `docs/frontend/COMPONENT-INVENTORY.md` updates.
+  - *(future)* `docs/frontend/ANALYTICS-EVENTS.md` updates.
+  - *(future)* `docs/frontend/ACCESSIBILITY.md` attestation.
 - **Handoff criteria:** does not begin until the SDK/types for the slice actually exist; frontend review checklist from persona file satisfied.
 
 ### 3.8 Riley — Code Reviewer
 
-- **Role:** Audit implementation against rules, plans, use cases, and handoff completeness.
+- **Role:** Audit implementation against rules, plans, and use cases.
 - **Inputs:**
   - Slice under review.
   - Corresponding plan row and use cases.
-  - Brad's or Fran's slice summary.
   - Rules applicable to the changed modules.
 - **Outputs:**
-  - Findings table with severity, category, file references, and handoff-gap items.
+  - Findings table with severity, category, and file references.
   - Explicit merge recommendation or block.
-- **Handoff criteria:** every finding is either resolved or explicitly accepted with rationale; ADR / runbook / current-state doc gaps are either closed or tracked as follow-up with owner.
+  - *(future)* Handoff-completeness review (ADR, runbook, current-state doc gaps).
+- **Handoff criteria:** every finding is either resolved or explicitly accepted with rationale.
 
 ---
 
@@ -203,12 +208,11 @@ The rest of the flow (`Pam → Tom → Archie → Parker → Brad / Fran → Ril
 | Owner | Pam | Vision, visuals (Mode B) | Conversation started |
 | Pam | Tom | `requirements/` bundle | All items labeled; owner signed off; `open-questions.md` classified |
 | Tom | Archie | `tech-specs/` bundle | Every use case mapped to flows; every route has roles + errors; domain model complete |
-| Tom | Brad / Fran (direct, slice-specific reads) | `tech-specs/features/<feature>/*` | Same as Tom → Archie for the scoped feature |
-| Archie | Parker | `plans/` with ADRs and infra docs | Diagrams present; infra checklist complete; rollback plan noted |
+| Archie | Parker | `plans/` | Task table present; design decisions documented |
 | Parker | Brad / Fran | Sliced plan rows | Slices independently committable; dependencies declared |
-| Brad | Fran | Regenerated SDK + contract docs | SDK exported; contract-documentation checklist clear; examples present for non-trivial routes |
-| Fran | Brad | Contract-question artifact | Question is structured; cites what docs say; proposes doc addition |
-| Brad / Fran | Riley | Slice summary + changed files | Slice-completion checklist satisfied; handoff docs updated |
+| Brad | Fran | Regenerated SDK + contract docs | SDK exported; contract-documentation checklist satisfied |
+| Fran | Brad | Contract question | Cites what docs say; proposes doc addition |
+| Brad / Fran | Riley | Code for review | Slice-completion checklist satisfied |
 | Riley | Brad / Fran | Findings table | Each finding resolved or explicitly accepted |
 
 ---
@@ -219,41 +223,48 @@ The rest of the flow (`Pam → Tom → Archie → Parker → Brad / Fran → Ril
 - **Technical contract question** (endpoint shape, schema, state machine) → `Tom` during spec; `Brad` during and after implementation.
 - **Implementation question** (how to build in the stack) → `Brad` / `Fran` / `Archie` by layer.
 - **Model-impact classification** (does this change the domain model?) → `Dom`.
-- **Operational question** (how does this run in prod, who is on call) → `Archie` primarily; `Brad` / `Fran` when scoped to their layer.
-- **Handoff gap** (doc missing, runbook missing, ADR missing) → `Riley` flags; originating persona fixes.
 
 ---
 
 ## 6. Cross-Cutting Artifacts
 
-These survive plan archiving and must be kept current by their owning persona:
+Artifacts that survive plan archiving and must be kept current:
 
-| Artifact | Owner | Purpose |
+| Artifact | Owner | Status |
 |---|---|---|
-| `docs/ARCHITECTURE.md` | Archie | Current-state system overview |
-| `docs/INFRASTRUCTURE.md` | Archie | What runs where and what depends on what |
-| `docs/DATABASE-SCHEMA.md` | Archie | Target schema reference |
-| `docs/adr/` | Archie (primary); Brad / Fran propose when relevant | Architecture decision records |
-| `docs/FEATURE-FLAGS.md` | Brad | Flag inventory with owner, default, retirement |
-| `docs/RUNBOOKS/` | Brad | Per-endpoint or per-job operational guidance |
-| `docs/frontend/COMPONENT-INVENTORY.md` | Fran | Shared component registry |
-| `docs/frontend/ANALYTICS-EVENTS.md` | Fran | Event registry with payload and owner |
-| `docs/frontend/ACCESSIBILITY.md` | Fran | a11y bar, tooling, manual review expectations |
-| `docs/DEPLOYMENT-READINESS.md` | Archie | Pre-deploy checklist |
-| `CHANGELOG.md` | Archie or Riley at release boundaries | Human-readable change summary |
-| `glossary.md` (`requirements/`) | Pam | Canonical terminology |
-| `roles-and-actors.md` | Pam | Role definitions and capability matrix |
-
-A slice is not `Done` if it introduces behavior that belongs in one of these artifacts but the artifact wasn't updated in the same slice.
+| `requirements/` | Pam | Active — canonical product requirements |
+| `tech-specs/` | Tom + Dom | New (Plan 04) — canonical technical specifications |
+| `plans/` | Archie + Parker | Active — design plans and task tables |
+| `docs/DATABASE-SCHEMA.md` | Archie | Active |
+| `glossary.md` (in `requirements/`) | Pam | Active |
+| `roles-and-actors.md` (in `requirements/`) | Pam | Active |
+| `docs/ARCHITECTURE.md` | Archie | *(future — Plan 03)* |
+| `docs/INFRASTRUCTURE.md` | Archie | *(future — Plan 03)* |
+| `docs/adr/` | Archie | *(future — Plan 03)* |
+| `docs/FEATURE-FLAGS.md` | Brad | *(future — Plan 03)* |
+| `docs/RUNBOOKS/` | Brad | *(future — Plan 03)* |
+| `docs/frontend/COMPONENT-INVENTORY.md` | Fran | *(future — Plan 03)* |
+| `docs/frontend/ANALYTICS-EVENTS.md` | Fran | *(future — Plan 03)* |
+| `docs/frontend/ACCESSIBILITY.md` | Fran | *(future — Plan 03)* |
+| `docs/DEPLOYMENT-READINESS.md` | Archie | *(future — Plan 03)* |
+| `CHANGELOG.md` | Archie or Riley | *(future — Plan 03)* |
 
 ---
 
-## 7. Notes on Current vs Target State
+## 7. What's Active Now vs What's Next
 
-- Pam, Dom, Archie, Parker, Brad, Fran, and Riley personas exist today under `agents/`.
-- Abe (Application Specification Builder) is dormant. It is retained for one-time extraction from projects that lack structured requirements but is not part of the active Pam → Tom → Archie → Brad/Fran flow.
-- Tom does not yet exist; it will be added as Plan 02 lands.
-- Several cross-cutting artifacts in §6 do not yet exist; Plan 03 scaffolds them.
-- Workflow rules, rule files, and persona files will be updated to match this flow as Plans 01–03 execute.
+**Active (Plan 04 — minimal Pam → Tom rollout):**
 
-Until the plans land, personas should follow their current persona files; this document represents the target state those plans converge toward.
+- Pam produces the full requirements bundle with confidence labels, use-case template, Mode A/B, and handoff floor.
+- Tom converts requirements into per-feature tech specs (`domain-model.md`, `api-surface.md`, `flows.md`), orchestrating Dom.
+- Dom operates as Tom's subagent during greenfield; existing mid-implementation impact classification is unchanged.
+- Archie, Parker, Brad, Fran, and Riley continue using their current persona files with no new output requirements.
+
+**Next (Plans 02 and 03 — after pilot retrospective):**
+
+- Tom: project-level outputs (consolidated domain model, error envelope, auth model, integration notes).
+- Archie: ADRs, `docs/ARCHITECTURE.md`, `docs/INFRASTRUCTURE.md`, extended design plan template.
+- Brad: slice summary, contract examples, migration runbooks, feature-flag inventory, operational runbooks.
+- Fran: structured contract-question format, slice summary, component inventory, analytics events registry, accessibility attestation.
+- Riley: handoff-completeness review scope.
+- Workflow rules: formal Spec Refinement Loop phase, `rules/product-requirements-rules.md`, `rules/technical-specification-rules.md`.
